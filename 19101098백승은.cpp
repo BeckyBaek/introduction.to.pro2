@@ -1,66 +1,93 @@
 #include <iostream>
+#include <string>
 using namespace std;
 
-class Temperature {
+class Student {
 public:
-    void setTempKelvin(double temp);
-    void setTempFahrenheit(double temp);
-    void setTempCelsius(double temp);
-    double getTempKelvin();
-    double getTempFahrenheit(); // Corrected the function name
-    double getTempCelsius();
+    Student();
+    ~Student();
+    void InputData();
+    void OutputData();
+    void ResetClasses();
+    Student& operator=(const Student& rightSide);
 
 private:
-    double kelvin;
+    string name;
+    int numClasses;
+    string* classList;
 };
 
-void Temperature::setTempKelvin(double temp) {
-    kelvin = temp;
+Student::Student() {
+    name = "";
+    numClasses = 0;
+    classList = nullptr;
 }
 
-void Temperature::setTempFahrenheit(double temp) {
-    kelvin = (5.0 * (temp - 32) / 9) + 273.15;
+Student::~Student() {
+    delete[] classList;
 }
 
-void Temperature::setTempCelsius(double temp) {
-    kelvin = temp + 273.15;
+void Student::InputData() {
+    cout << "Enter student name: ";
+    cin >> name;
+    cout << "Enter number of classes: ";
+    cin >> numClasses;
+    cin.ignore(); 
+
+    classList = new string[numClasses];
+    for (int i = 0; i < numClasses; ++i) {
+        cout << "Enter name of class " << i + 1 << ": ";
+        getline(cin, classList[i]);
+    }
 }
 
-double Temperature::getTempKelvin() {
-    return kelvin;
+void Student::OutputData() {
+    cout << "Name: " << name << endl;
+    cout << "Number of classes: " << numClasses << endl;
+    for (int i = 0; i < numClasses; ++i) {
+        cout << "Class " << i + 1 << ": " << classList[i] << endl;
+    }
 }
 
-double Temperature::getTempCelsius() {
-    return kelvin - 273.15;
+void Student::ResetClasses() {
+    numClasses = 0;
+    delete[] classList;
+    classList = nullptr;
 }
 
-double Temperature::getTempFahrenheit() {
-    return (getTempCelsius() * 9.0 / 5) + 32; // Corrected the function name
+Student& Student::operator=(const Student& rightSide) {
+    if (this != &rightSide) {
+        delete[] classList;
+        name = rightSide.name;
+        numClasses = rightSide.numClasses;
+        classList = new string[numClasses];
+        for (int i = 0; i < numClasses; ++i) {
+            classList[i] = rightSide.classList[i];
+        }
+    }
+    return *this;
 }
 
 int main() {
-    Temperature temp;
+    Student s1, s2;
 
-    temp.setTempFahrenheit(32);
-    cout << "In Celsius: " << temp.getTempCelsius() << endl;
-    cout << "In Fahrenheit: " << temp.getTempFahrenheit() << endl;
-    cout << "In Kelvin: " << temp.getTempKelvin() << endl;
-    cout << endl;
+    s1.InputData();
+    cout << "Student 1's data: " << endl;
+    s1.OutputData();
 
-    temp.setTempCelsius(100);
-    cout << "In Celsius: " << temp.getTempCelsius() << endl;
-    cout << "In Fahrenheit: " << temp.getTempFahrenheit() << endl;
-    cout << "In Kelvin: " << temp.getTempKelvin() << endl;
-    cout << endl;
+    cout<<endl;
 
-    temp.setTempKelvin(0);
-    cout << "In Celsius: " << temp.getTempCelsius() << endl;
-    cout << "In Fahrenheit: " << temp.getTempFahrenheit() << endl;
-    cout << "In Kelvin: " << temp.getTempKelvin() << endl;
-    cout << endl;
+    s2 = s1;
+    cout << "Student 2's data after assignment from student 1: " << endl;
+    s2.OutputData();
 
-    cout << "Enter a character to exit" << endl;
-    char wait;
-    cin >> wait;
+    s1.ResetClasses();
+    cout << "Student 1's data after reset: " << endl;
+    s1.OutputData();
+
+    cout << "Student 2's data, should still have original classes: " << endl;
+    s2.OutputData();
+    
+    cout <<endl;
     return 0;
 }
